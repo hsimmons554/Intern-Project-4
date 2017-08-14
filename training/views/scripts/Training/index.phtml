@@ -1,0 +1,69 @@
+<!-- Modal to Add People -->
+<div class="modal fade" id="personModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add an User Account</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          {{ csrf_field() }}
+        <h4>Type in the Name and favorite food of the New User:</h4>
+        <div class="form-group">
+        <label class="label label-default">First Name:</label><input id="add_prs_fname" type="text" class="form-control"><br>
+      </div>
+      <div class="form-group">
+        <label class="label label-default">Last Name:</label><input id="add_prs_lname" type="text" class="form-control"><br>
+      </div>
+      <div class="form-group">
+        <label class="label label-default">Favorite Food:</label><input id="add_prs_food" type="text" class="form-control">
+      </div>
+      </div>
+    </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="submit_person" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal to Add Visits -->
+<div class="modal fade" id="visitModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add a Visit to User's Account</h4>
+      </div>
+      <div class="modal-body">
+        <p>Select the a User Profile and the State that the User visited recently:</p>
+        <label class="label label-default">Name:</label><select id="add_vis_prs_list" class="form-control"></select><br>
+        <label class="label label-default">State:</label><select id="add_vis_state_list" class="form-control"></select><br>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="submit_visit" type="button" class="btn btn-primary" data-dismiss="modal">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+<!-- Trigger the modals with buttons -->
+<button id="add_person" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#personModal">Add Person</button>
+<button id="add_visit" type="button" class="btn btn-info btn-primary" data-toggle="modal" data-target="#visitModal">Add Visit</button><hr>
+</div>
+<div class="container">
+<h1>Select Person</h1>
+<button id="sub_prs_btn" type="button" class="btn btn-primary">Submit Person</button>
+<select id="person_list" class="form-control"></select>
+</div>
+<div id="data_labels" class="container">
+<label class="label label-success headers">Name: </label><label id="person_name" class="label label-default results"></label><br>
+<label class="label label-success headers">Food: </label><label id="person_food" class="label label-default results"></label><br>
+<label id="states_label" class="label label-success">States: </label><label class="results">
+    <ul id="person_states"></ul></label><br class="footer">
+</div>

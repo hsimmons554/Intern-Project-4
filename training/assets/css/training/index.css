@@ -1,0 +1,45 @@
+#data_labels {
+  font-size: 25px;
+  margin-top: .5em;
+}
+
+#data_labels .headers {
+  float: left;
+}
+
+#data_labels .results {
+  float: right;
+}
+
+br.footer {
+  float: none;
+}
+
+#person_list {
+  display:inline-block;
+  width:auto;
+}
+
+#states_label {
+  float:left;
+  margin-top:3px;
+}
+
+div.modal-content {
+  background-color: lightgray;
+  border-radius: 25px;
+}
+
+div.modal-header {
+  background-color: darkgray;
+  border-radius: 25px 25px 0px 0px;
+}
+
+div.modal-footer {
+  background-color: darkgray;
+  border-radius: 0px 0px 25px 25px;
+}
+
+div.modal-body label {
+  float: left;
+}
