@@ -64,8 +64,8 @@ class State
     public $em = null;
 
     /**
-     * Many States have Many People
-     * @ORM\ManyToMany(targetEntity="Person", mappedBy="people")
+     * Bidirectional - Many States have Many People
+     * @ORM\ManyToMany(targetEntity="Training\Entity\Person", mappedBy="states")
      */
      private $people;
 
@@ -104,9 +104,9 @@ class State
     /**
      * Establish M:M relation with people
      */
-     public function __construct()
+     public function getPeople()
      {
-       $this->people = new ArrayCollection();
+       return $this->people;
      }
 
     /**

@@ -43,7 +43,7 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
         $array[$re->id]['last_name'] = $re->last_name;
         $array[$re->id]['favorite_food'] = $re->favorite_food;
       }
-
+      
       //Output the json
       $this->_helper->json($array);
     }
@@ -68,22 +68,48 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
       $this->_helper->json($array);
     }
 
+    public function showPersonStatesAction()
+    {
+      $this->_helper->layout()->disableLayout();
+      $this->_helper->viewRenderer->setNoRender(true);
+
+      $id = $this->_getParam('id');
+      if($id <= 0 || !is_numeric($id))
+      {
+        $array['error'] = "Problem retrieving user's ID";
+        $this->_helper->json($array);
+      } else {
+        $user = $this->entity->getEntityManager()->getRepository(
+                    'Training\Entity\Person')->find($id);
+
+        $array = [];
+        foreach($user->states as $state)
+        {
+          $array[] = $state->state_name;
+        }
+        sort($array);
+        return $this->_helper->json($array);
+      }
+    }
+
     public function singlePersonAction()
     {
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
       $id = $this->_getParam('id', 1);
-      $records = $this->entity->getEntityManager()->getRepository(
-                                "Training\Entity\Person")->find($id);
+      // If invalid id default to 1
+      if($id <= 0 || !is_numeric($id)){
+        $id = 1;
+      }
+      $i = $this->entity->getEntityManager()->getRepository(
+                          'Training\Entity\Person')->find($id);
 
       $array = [];
-      foreach($records as $i)
-      {
-        $array[$i->id]['first_name'] = $i->first_name;
-        $array[$i->id]['last_name'] = $i->last_name;
-        $array[$i->id]['favorite_food'] = $i->favorite_food;
-      }
+        $array['id'] = $id;
+        $array['first_name'] = $i->first_name;
+        $array['last_name'] = $i->last_name;
+        $array['favorite_food'] = $i->favorite_food;
 
       // Output the json
       $this->_helper->json($array);
@@ -103,19 +129,46 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
         $array['error'] = "Problem retrieving new user's Information";
         $this->_helper->json($array);
       } else {
-        $user = new Person();
-        $user->__set('first_name', $fname);
-        $user->__set('last_name', $lname);
-        $user->__set('favorite_food', $food);
-        $user->persist();
+        // Create new Record for people table
+        $user = new Training\Entity\Person();
+        $user->first_name = $fname;
+        $user->last_name = $lname;
+        $user->favorite_food = $food;
+        $this->entity->getEntityManager()->persist($user);
+        $this->entity->getEntityManager()->flush();
 
         // Return user to index
-        $id = $user->__get('id');
+        $id = $user->id;
         $array['id'] = $id;
         $array['first_name'] = $fname;
         $array['last_name'] = $lname;
         $array['favorite_food'] = $food;
         $this->_helper->json($array);
       }
+    }
+
+    public function storeVisitsAction()
+    {
+      $this->_helper->layout()->disableLayout();
+      $this->_helper->viewRenderer->setNoRender(true);
+
+      $prs_id = $this->_getParam('prs_id');
+      $ste_id = $this->_getParam('ste_id');
+
+      if($prs_id == NULL || $prs_id === FALSE || $ste_id == NULL ||
+         $ste_id === FALSE)
+         {
+           $array['error'] = "Problem retrieving user's visit's information.";
+           $this->_helper->json($array);
+         } else {
+           // Create the visit record
+           $user = $this->entity->getEntityManager()->getRepository(
+                    'Training\Entity\Person')->find($prs_id);
+           $state = $this->entity->getEntityManager()->getRepository(
+                    'Training\Entity\State')->find($ste_id);
+           $user->getStates()->add($state);
+           $state->getPeople()->add($user);
+           $this->entity->getEntityManager()->flush();
+         }
     }
 }

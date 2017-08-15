@@ -71,11 +71,14 @@ class Person
     public $em = null;
 
     /**
-     * Many People have Many States
-     * @ORM\ManyToMany(targetEntity="State", inversedBy="people")
-     * @ORM\JoinTable(name="people_states")
+     * Bidirectional - Many People have Many States
+     * @ORM\ManyToMany(targetEntity="Training\Entity\State")
+     * @ORM\JoinTable(name="people_states",
+     *    joinColumns={@ORM\JoinColumn(name="person_id", referencedColumnName="id")},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="state_id", referencedColumnName="id")}
+     *    )
      */
-    protected $states = null;
+    protected $states;
 
     /**
      * Get Doctrine Entity Manager
@@ -114,10 +117,11 @@ class Person
      *
      *
      */
-     public function __construct()
+     public function getStates()
      {
-       $this->states = new ArrayCollection();
+       return $this->states;
      }
+
 
     /**
      * Convert the object to an array.
@@ -160,26 +164,6 @@ class Person
             $metadata->setFieldValue($entity, $property, $value);
         }
         return $entity;
-    }
-
-    /**
-     * Make reference to M:M relation
-     *
-     * @param object $state
-     */
-    public function assignToState (State $state)
-    {
-      $this->states[] = $state;
-    }
-
-    /**
-     *
-     *
-     * @return array
-     */
-    public function getStates()
-    {
-      return $this->states;
     }
 
     /** @ORM\PrePersist */

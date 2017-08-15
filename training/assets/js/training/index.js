@@ -25,34 +25,50 @@ $(document).ready(function(){
       $("#add_prs_fname").val("");
       $("#add_prs_lname").val("");
       $("#add_prs_food").val("");
-      return;
+      die();
     }
     if(!food || food == "" || $.isNumeric(parseInt(food))) {
       alert("Please enter a food type and try again");
       $("#add_prs_fname").val("");
       $("#add_prs_lname").val("");
       $("#add_prs_food").val("");
-      return;
+      die();
     }
-      $.post("/training/training/store-people",
-      {
-        //'_token': $('meta[name=csrf-token]').attr('content'),
-        first_name: fname,
-        last_name: lname,
-        favorite_food: food
-      },
-      function(data, status){
-        var obj = data;
-        if(!obj.id || !obj.first_name || !obj.last_name){
-          alert("Something went wrong.\nId: "+obj.id+"\nFirst Name: "+obj.first_name+
-                "\nLast Name: "+obj.last_name);
-          die();
-        }else {
-        $("#person_list").append("<option value=\"" +
-          obj.id + "\">" + obj.first_name + " " + obj.last_name + "</option>");
-          $("#add_prs_fname").val("");
-          $("#add_prs_lname").val("");
-          $("#add_prs_food").val("");
+      $.ajax({
+        url: "/training/training/store-people",
+        type: "post",
+        data: {
+          "first_name": fname,
+          "last_name": lname,
+          "favorite_food": food
+        },
+        success: function(data, status)
+        {
+            $("#add_prs_fname").val("");
+            $("#add_prs_lname").val("");
+            $("#add_prs_food").val("");
+            console.log("success with post\nId: "+data.id +
+                  "\nName: " + data.first_name + " " + data.last_name +
+                  "\nFood: " + data.favorite_food);
+            if(!data.id || !data.first_name || !data.last_name)
+            {
+              console.log("Something went wrong with the Controller's return " +
+                    "array of data:\nID: " + data.id + "\nName: " +
+                    data.first_name + " " + data.last_name);
+              die();
+            } else {
+              $("#person_list").append("<option value=\"" +
+                    data.id + "\">" + data.first_name + " " + data.last_name +
+                    "</option>");
+            }
+        },
+        error: function(xhr)
+        {
+            $("#add_prs_fname").val("");
+            $("#add_prs_lname").val("");
+            $("#add_prs_food").val("");
+            console.log("something went wrong with ajax.");
+            die();
         }
       });
   });
@@ -94,17 +110,26 @@ $(document).ready(function(){
   $("#submit_visit").click(function(){
     var prs_id = $("#add_vis_prs_list").val();
     var ste_id = $("#add_vis_state_list").val();
-    $.post("/visit/" + prs_id,
-    {
-      '_token': $('meta[name=csrf-token]').attr('content'),
-      prs_id: prs_id,
-      ste_id: ste_id,
-    },
-    function(data, status){
-      var obj = data;
-      if(!obj.id || !obj.person_state.person_id || !obj.state_name){
-        alert("Something went wrong.\nState ID: "+obj.id +
-              "\"Person ID: "+obj.person_state.person_id + "\nState Name: " + obj.state_name);
+    $.ajax({
+      url: "/training/training/store-visits",
+      type: "post",
+      data: {
+        "prs_id": prs_id,
+        "ste_id": ste_id
+      },
+      success: function(data, status)
+      {
+          if(!data.prs_id || !data.ste_id)
+          {
+            console.log("Something went wrong.");
+          } else {
+              console.log("Success with post.");
+          }
+
+      },
+      error: function(xhr)
+      {
+          console.log("Something went wrong with ajax.");
       }
     });
   });
@@ -125,19 +150,31 @@ $(document).ready(function(){
         success: function(data, status)
         {
           var obj = data;
-          var name = obj[0].first_name + " " + obj[0].last_name;
-          var food = obj[0].favorite_food;
+          var name = obj.first_name + " " + obj.last_name;
+          var food = obj.favorite_food;
           $("#person_name").text(name);
           $("#person_food").text(food);
 
           //Call Nested function for states visited
-          $.get("app/people/"+ $("#person_list").val() +"/states",
-                                    function(data, status) {
-            var obj = data;
-            var name;
-            for (i=0;i<obj.length;i++){
-              name = obj[i].state_name;
-              $("#person_states").append("<li><label class=\"label label-default\">"+name+"</label></li>");
+          $.ajax({
+            url: "/training/training/show-person-states",
+            type: "get",
+            data: {
+              "id": $("#person_list").val()
+            },
+            success: function(data, status)
+            {
+                var name;
+                for (i=0; i<data.length; i++)
+                {
+                  name = data[i];
+                  $("#person_states").append("<li><label class=\"label label-default\">" +
+                    name + "</label></li>");
+                }
+            },
+            error: function(xhr)
+            {
+                console.log("Somthing went wrong with the GET states by person request");
             }
           });
         },
