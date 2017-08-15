@@ -34,6 +34,8 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
+      // Retrieve all people records and store the user data into
+      // a multi-dimensional array
       $records = $this->entity->getEntityManager()->getRepository(
                                 "Training\Entity\Person")->findAll();
       $array = [];
@@ -43,7 +45,7 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
         $array[$re->id]['last_name'] = $re->last_name;
         $array[$re->id]['favorite_food'] = $re->favorite_food;
       }
-      
+
       //Output the json
       $this->_helper->json($array);
     }
@@ -54,7 +56,8 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
-      // Retrieve all the state records
+      // Retrieve all state records and store the state data into
+      // a multi-dimensional array
       $records = $this->entity->getEntityManager()->getRepository(
                                 "Training\Entity\State")->findAll();
       $array = [];
@@ -70,18 +73,25 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
 
     public function showPersonStatesAction()
     {
+      // Disable the rendering of the default view
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
+      // Request the user's id number from the ajax get call
+      // and filter out requests that are not numbers above 0
       $id = $this->_getParam('id');
       if($id <= 0 || !is_numeric($id))
       {
         $array['error'] = "Problem retrieving user's ID";
         $this->_helper->json($array);
       } else {
+        // Retrieve user's data
         $user = $this->entity->getEntityManager()->getRepository(
                     'Training\Entity\Person')->find($id);
 
+        // Retrieve list of states user visited and store the
+        // state names into an array that's returned to the
+        // ajax get call
         $array = [];
         foreach($user->states as $state)
         {
@@ -94,14 +104,20 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
 
     public function singlePersonAction()
     {
+      // Disable the rendering of the default view
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
+      // Request the user's id number from the ajax get call
+      // and if no parameter is supplied from the call the
+      // default to the first id number in the database
       $id = $this->_getParam('id', 1);
       // If invalid id default to 1
       if($id <= 0 || !is_numeric($id)){
         $id = 1;
       }
+      // Retrieve user's data and store it into a multi-dimensional
+      // array
       $i = $this->entity->getEntityManager()->getRepository(
                           'Training\Entity\Person')->find($id);
 
@@ -117,9 +133,13 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
 
     public function storePeopleAction()
     {
+      //Disable the rendering of the default view
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
+      // Request the user's information from the ajax
+      // post request and output an error for any incorrect
+      // information
       $fname = $this->_getParam('first_name');
       $lname = $this->_getParam('last_name');
       $food = $this->_getParam('favorite_food');
@@ -149,9 +169,13 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
 
     public function storeVisitsAction()
     {
+      // Disable the rendering of the default view
       $this->_helper->layout()->disableLayout();
       $this->_helper->viewRenderer->setNoRender(true);
 
+      // Request the required id numbers for the query
+      // from the ajax post request and output an error if
+      // there's any incorrect data
       $prs_id = $this->_getParam('prs_id');
       $ste_id = $this->_getParam('ste_id');
 
