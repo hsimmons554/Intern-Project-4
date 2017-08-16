@@ -23,6 +23,7 @@ class Training_TrainingController extends Ia_Controller_Action_Abstract
         $this->addFilterWidget('activeInactive','e.active',1);
     }
 
+    // Action to load the index page
     public function indexAction()
     {
 
